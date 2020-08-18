@@ -9,7 +9,21 @@ import (
 
 const npmrc = "//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n"
 
+var FUVERSION = "dev"
+
 type Updater struct {
+}
+
+func (u *Updater) Init(m map[string]string) error {
+	return nil
+}
+
+func (u *Updater) Name() string {
+	return "npm"
+}
+
+func (u *Updater) Version() string {
+	return FUVERSION
 }
 
 func (u *Updater) ForFiles() string {
