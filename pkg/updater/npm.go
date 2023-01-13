@@ -2,7 +2,6 @@ package updater
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path"
 )
@@ -11,8 +10,7 @@ const npmrc = "//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n"
 
 var FUVERSION = "dev"
 
-type Updater struct {
-}
+type Updater struct{}
 
 func (u *Updater) Init(m map[string]string) error {
 	return nil
@@ -30,7 +28,7 @@ func (u *Updater) ForFiles() string {
 	return "package\\.json"
 }
 
-func updateJsonFile(fName, newVersion string) error {
+func updateJSONFile(fName, newVersion string) error {
 	file, err := os.OpenFile(fName, os.O_RDWR, 0)
 	if err != nil {
 		return err
@@ -56,13 +54,13 @@ func updateJsonFile(fName, newVersion string) error {
 }
 
 func (u *Updater) Apply(file, newVersion string) error {
-	if err := updateJsonFile(file, newVersion); err != nil {
+	if err := updateJSONFile(file, newVersion); err != nil {
 		return err
 	}
 
 	packageLockPath := path.Join(path.Dir(file), "package-lock.json")
 	if _, err := os.Stat(packageLockPath); err == nil {
-		if err := updateJsonFile(packageLockPath, newVersion); err != nil {
+		if err := updateJSONFile(packageLockPath, newVersion); err != nil {
 			return err
 		}
 	}
@@ -74,7 +72,7 @@ func (u *Updater) Apply(file, newVersion string) error {
 	var err error
 	npmrcPath := path.Join(path.Dir(file), ".npmrc")
 	if _, err = os.Stat(npmrcPath); os.IsNotExist(err) {
-		return ioutil.WriteFile(npmrcPath, []byte(npmrc), 0644)
+		return os.WriteFile(npmrcPath, []byte(npmrc), 0o644)
 	}
 
 	return err

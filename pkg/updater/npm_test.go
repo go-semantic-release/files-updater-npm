@@ -2,7 +2,6 @@ package updater
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -17,15 +16,15 @@ func TestNpmUpdater(t *testing.T) {
 	nVer := "1.2.3"
 	nVerJSON := json.RawMessage("\"" + nVer + "\"")
 	npmrcPath := "../../test/.npmrc"
-	pkgJsonPath := "../../test/package.json"
+	pkgJSONPath := "../../test/package.json"
 	os.Remove(npmrcPath)
 
-	err := updater.Apply(pkgJsonPath, nVer)
+	err := updater.Apply(pkgJSONPath, nVer)
 	require.NoError(err)
-	npmfile, err := ioutil.ReadFile(npmrcPath)
+	npmfile, err := os.ReadFile(npmrcPath)
 	require.NoError(err)
 	require.Equal([]byte(npmrc), npmfile, "invalid .npmrc")
-	f, err := os.OpenFile(pkgJsonPath, os.O_RDONLY, 0)
+	f, err := os.OpenFile(pkgJSONPath, os.O_RDONLY, 0)
 	require.NoError(err)
 	defer f.Close()
 	var data map[string]json.RawMessage
@@ -47,18 +46,18 @@ func TestNpmrc(t *testing.T) {
 
 	nVer := "1.2.3"
 	npmrcPath := "../../test/.npmrc"
-	pkgJsonPath := "../../test/package.json"
+	pkgJSONPath := "../../test/package.json"
 
-	err := ioutil.WriteFile(npmrcPath, []byte("TEST"), 0644)
+	err := os.WriteFile(npmrcPath, []byte("TEST"), 0o644)
 	require.NoError(err)
 
 	updater := &Updater{}
-	err = updater.Apply(pkgJsonPath, nVer)
+	err = updater.Apply(pkgJSONPath, nVer)
 	require.NoError(err)
-	npmfile, err := ioutil.ReadFile(npmrcPath)
+	npmfile, err := os.ReadFile(npmrcPath)
 	require.NoError(err)
 	require.Equal([]byte("TEST"), npmfile, "invalid .npmrc")
-	f, err := os.OpenFile(pkgJsonPath, os.O_RDONLY, 0)
+	f, err := os.OpenFile(pkgJSONPath, os.O_RDONLY, 0)
 	require.NoError(err)
 	defer f.Close()
 	require.NoError(err)
