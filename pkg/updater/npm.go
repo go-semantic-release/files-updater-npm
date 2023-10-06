@@ -12,7 +12,7 @@ var FUVERSION = "dev"
 
 type Updater struct{}
 
-func (u *Updater) Init(m map[string]string) error {
+func (u *Updater) Init(_ map[string]string) error {
 	return nil
 }
 
@@ -47,10 +47,7 @@ func updateJSONFile(fName, newVersion string) error {
 	}
 	enc := json.NewEncoder(file)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(data); err != nil {
-		return err
-	}
-	return nil
+	return enc.Encode(data)
 }
 
 func (u *Updater) Apply(file, newVersion string) error {
